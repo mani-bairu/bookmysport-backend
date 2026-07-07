@@ -3,6 +3,7 @@ package com.bookmysport.backend.security.service;
 import com.bookmysport.backend.common.ResponseApiDto.ApiResponse;
 import com.bookmysport.backend.exception.BadRequestException;
 import com.bookmysport.backend.exception.ResourseNotFoundException;
+import com.bookmysport.backend.notification.service.NotificationService;
 import com.bookmysport.backend.security.dtos.requestDto.loginRequestDto;
 import com.bookmysport.backend.security.dtos.requestDto.registerRequestDto;
 import com.bookmysport.backend.security.dtos.responseDto.authResponseDto;
@@ -11,6 +12,8 @@ import com.bookmysport.backend.security.models.SecurityUser;
 import com.bookmysport.backend.user.entity.UserEntity;
 import com.bookmysport.backend.user.enums.Role;
 import com.bookmysport.backend.user.repository.UserRepository;
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
+
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     @Autowired
@@ -37,9 +43,11 @@ public class AuthService {
     @Autowired
     JwtService jwtService;
 
+    private final NotificationService notificationService;
 
 
-    public authResponseDto userRegister(registerRequestDto request){
+
+    public authResponseDto userRegister(registerRequestDto request) throws MessagingException, IOException {
 
         if(userRepository.existsByEmail(request.getEmail())){
             throw new BadRequestException("provided Email Already Exists");
@@ -53,6 +61,8 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+
+        notificationService.sendWelcomeEmail(user);
 
         return authResponseDto.builder()
                 .email(user.getEmail())

@@ -58,6 +58,8 @@ public class SecurityConfig {
 
                     req.requestMatchers("/register", "/login").permitAll()
                             .requestMatchers("/ws/**","/test/**").permitAll()
+//                            .requestMatchers("/test/**").permitAll()
+
                             .requestMatchers(
                                     "/swagger-ui/**",
                                     "/v3/api-docs/**",
