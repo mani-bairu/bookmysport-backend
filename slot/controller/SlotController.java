@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/slot")
+@RequestMapping("/api/v1/slots")
 public class SlotController {
 
     private final SlotGenerationScheduler slotGenerationScheduler;
@@ -36,10 +36,10 @@ public class SlotController {
     }
 
 
-    @GetMapping("/{sportAreaId}/{date}")
+    @GetMapping()
     public ResponseEntity<ApiResponse<List<SlotResponseDto>>> getSlots(
-            @PathVariable Long sportAreaId,
-            @PathVariable LocalDate date) {
+            @RequestParam Long sportAreaId,
+            @RequestParam LocalDate date) {
 
         List<SlotResponseDto> slotsBySportAreaIdAndDate = slotService.
                 getSlotsBySportAreaIdAndDate(sportAreaId, date);

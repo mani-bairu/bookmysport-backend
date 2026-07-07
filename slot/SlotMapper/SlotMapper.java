@@ -16,6 +16,7 @@ public class SlotMapper {
                 .startTime(slot.getStartTime())
                 .endTime(slot.getEndTime())
                 .status(slot.getStatus())
+                .price(slot.getPrice())
                 .build();
     }
 }

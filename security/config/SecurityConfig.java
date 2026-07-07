@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -70,6 +71,8 @@ public class SecurityConfig {
                                     "/v3/api-docs/**",
                                     "/actuator/health"
                             ).permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/venues/**").permitAll()  // ← add this
+                            .requestMatchers(HttpMethod.GET, "/api/v1/slots/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(

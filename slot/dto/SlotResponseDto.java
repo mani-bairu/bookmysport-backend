@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -27,4 +28,6 @@ public class SlotResponseDto {
 
     @Enumerated(EnumType.STRING)
     private SlotStatus status;
+
+    private BigDecimal price;
 }
