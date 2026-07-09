@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/booking")
+@RequestMapping("/api/v1")
 public class BookingController {
 
     private final BookingService bookingService;
 
-    @PostMapping()
+    @PostMapping("/booking")
     public ResponseEntity<ApiResponse<BookingResponseDto>> createBooking(
             @RequestBody BookingRequestDto dto,
             @AuthenticationPrincipal SecurityUser securityUser

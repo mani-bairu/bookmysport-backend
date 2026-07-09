@@ -115,7 +115,7 @@ public class BookingService {
 
 
         booking.setStatus(
-                BookingStatus.PAYMENT_SUCCESS
+                BookingStatus.CONFIRMED
         );
 
 

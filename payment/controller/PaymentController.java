@@ -2,12 +2,15 @@ package com.bookmysport.backend.payment.controller;
 
 
 
+import com.bookmysport.backend.common.ResponseApiDto.ApiResponse;
 import com.bookmysport.backend.payment.dto.Response.PaymentResponseDto;
 import com.bookmysport.backend.payment.dto.request.VerifyPaymentRequestDto;
 import com.bookmysport.backend.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -30,14 +33,19 @@ public class PaymentController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<String> verifyPayment(
+    public ResponseEntity<ApiResponse<String>> verifyPayment(
             @RequestBody VerifyPaymentRequestDto request
     ) {
 
         paymentService.verifyPayment(request);
 
-        return ResponseEntity.ok(
-                "Payment verified successfully"
+        return ResponseEntity.ok().body(
+                ApiResponse.<String>builder()
+                        .message("Success")
+                        .success(true)
+                        .data("Payment successfully completed")
+                        .timestamp(LocalDateTime.now())
+                        .build()
         );
     }
 }

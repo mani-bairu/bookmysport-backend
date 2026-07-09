@@ -14,4 +14,14 @@ public class ApiResponse<T>{
     private T data;
     private LocalDateTime timestamp;
 
+
+    // static factory methods
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>(true, message, data, null);
+    }
+
+//    public static <T> ApiResponse<T> error(String error) {
+//        return new ApiResponse<>(false, null, null,error);
+//    }
+
 }

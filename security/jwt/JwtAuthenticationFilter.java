@@ -26,12 +26,24 @@ public class JwtAuthenticationFilter
     private final CustomerDetailService
             customUserDetailsService;
 
+
+
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        // Skip CORS preflight requests
+        if (request.getMethod().equals("OPTIONS")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        System.out.println("JWT FILTER HIT");
+        // ... rest of your existing code
 
         System.out.println("JWT FILTER HIT");
 

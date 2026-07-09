@@ -1,6 +1,7 @@
 package com.bookmysport.backend.slot.controller;
 
 import com.bookmysport.backend.common.ResponseApiDto.ApiResponse;
+import com.bookmysport.backend.exception.BadRequestException;
 import com.bookmysport.backend.security.models.SecurityUser;
 import com.bookmysport.backend.slot.dto.SlotResponseDto;
 import com.bookmysport.backend.slot.scheduler.SlotGenerationScheduler;
@@ -54,15 +55,24 @@ public class SlotController {
     }
 
     @PostMapping("/{slotId}/lock")
-    public ResponseEntity<String> lockSlot(
+    public ResponseEntity<ApiResponse<String>> lockSlot(
             @PathVariable Long slotId,
             @AuthenticationPrincipal SecurityUser securityUser){
 
         Boolean success = slotLockService.lockSlot(slotId, securityUser.getUser().getId());
 
         return success
-                ? ResponseEntity.ok("Slot Locked")
-                : ResponseEntity.badRequest().body("Cannot lock slot");
-
+                ? ResponseEntity.ok(ApiResponse.<String>builder()
+                        .success(true)
+                        .message("Slot Locked")
+                        .data("Slot Locked Sucessfully")
+                        .timestamp(LocalDateTime.now())
+                        .build())
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                        .success(false)
+                        .message("Slot is not Locked")
+                        .data("Slot is not locked")
+                        .timestamp(LocalDateTime.now())
+                        .build());
     }
 }
