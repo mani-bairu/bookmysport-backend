@@ -97,4 +97,12 @@ public class GlobalExceptionHandler {
                 );
 
     }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handleEmailAlreadyExists(EmailAlreadyExistsException ex){
+     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+             .body(
+                     ApiResponse.error(ex.getMessage())
+             );
+    }
 }

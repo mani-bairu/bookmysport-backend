@@ -3,6 +3,8 @@ package com.bookmysport.backend.user.mapper.UserMapper;
 import com.bookmysport.backend.booking.entity.BookingEntity;
 import com.bookmysport.backend.slot.entity.SlotEntity;
 import com.bookmysport.backend.user.dto.Response.UserBookingsResponseDto;
+import com.bookmysport.backend.user.dto.Response.UserDashBoardResponse;
+import com.bookmysport.backend.user.entity.UserEntity;
 import com.bookmysport.backend.venue.entity.SportAreaEntity;
 import com.bookmysport.backend.venue.entity.VenueEntity;
 import org.springframework.stereotype.Component;
@@ -22,5 +24,12 @@ public class UserMapper {
                 .venueName(venue.getVenueName())
                 .build();
 
+    }
+
+    public UserDashBoardResponse entityToDashBoardResponseDto(UserEntity user){
+        return UserDashBoardResponse.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
 }

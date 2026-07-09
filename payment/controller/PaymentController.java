@@ -6,10 +6,12 @@ import com.bookmysport.backend.common.ResponseApiDto.ApiResponse;
 import com.bookmysport.backend.payment.dto.Response.PaymentResponseDto;
 import com.bookmysport.backend.payment.dto.request.VerifyPaymentRequestDto;
 import com.bookmysport.backend.payment.service.PaymentService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @RestController
@@ -35,7 +37,7 @@ public class PaymentController {
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<String>> verifyPayment(
             @RequestBody VerifyPaymentRequestDto request
-    ) {
+    ) throws MessagingException, IOException {
 
         paymentService.verifyPayment(request);
 

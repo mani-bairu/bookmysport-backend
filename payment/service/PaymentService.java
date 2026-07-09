@@ -15,10 +15,12 @@ import com.bookmysport.backend.payment.repository.PaymentRepository;
 import com.bookmysport.backend.slot.service.SlotLockService;
 import com.bookmysport.backend.slot.service.SlotService;
 import com.razorpay.Order;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static com.bookmysport.backend.payment.enums.PaymentStatus.SUCCESS;
@@ -129,7 +131,7 @@ public class PaymentService {
     @Transactional
     public void verifyPayment(
             VerifyPaymentRequestDto request
-    ) {
+    ) throws MessagingException, IOException {
 
 
         PaymentEntity payment =

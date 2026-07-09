@@ -5,6 +5,7 @@ import com.bookmysport.backend.security.jwt.JwtAuthenticationFilter;
 import com.bookmysport.backend.security.service.CustomerDetailService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -74,7 +75,7 @@ public class SecurityConfig {
                                     "/swagger-ui.html",
                                     "/actuator/health"
                             ).permitAll()
-                            .requestMatchers("/api/v1/**").permitAll()
+                            .requestMatchers("/api/v1/auth/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/venues/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/slots/**").permitAll()
                             .anyRequest().authenticated();
@@ -100,5 +101,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(
+            JwtAuthenticationFilter filter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registration =
+                new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);  // ← prevents auto-registration
+        return registration;
     }
 }

@@ -18,8 +18,12 @@ public class registerRequestDto {
     @NotBlank(message = "Email is Required")
     private String email;
 
-    @Size(min = 6,message = "Password must be atleast 6 characters")
+    @Size(min = 8,message = "Password must be atleast 8 characters")
     @NotBlank(message = "Password is required")
     private String password;
+
+    @NotNull(message = "Otp is Required")
+    @Size(min = 6, max = 6)
+    private String otp;
 
 }

@@ -6,6 +6,7 @@ import com.bookmysport.backend.common.enums.BookingStatus;
 import com.bookmysport.backend.exception.ResourseNotFoundException;
 import com.bookmysport.backend.slot.entity.SlotEntity;
 import com.bookmysport.backend.user.dto.Response.UserBookingsResponseDto;
+import com.bookmysport.backend.user.dto.Response.UserDashBoardResponse;
 import com.bookmysport.backend.user.entity.UserEntity;
 import com.bookmysport.backend.user.mapper.UserMapper.UserMapper;
 import com.bookmysport.backend.user.repository.UserRepository;
@@ -22,6 +23,8 @@ public class UserService {
 
    private final UserRepository userRepository;
 
+   private final UserMapper userMapper;
+
 
    public List<UserBookingsResponseDto> getUserBooking(Long userId){
 
@@ -33,5 +36,11 @@ public class UserService {
                userBookingList(userEntity.getId(), BookingStatus.CONFIRMED);
        return userBookings;
 
+   }
+
+
+   public UserDashBoardResponse userDashBoardResponse(Long userId){
+       UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new ResourseNotFoundException("User Not Found"));
+       return userMapper.entityToDashBoardResponseDto(userEntity);
    }
 }

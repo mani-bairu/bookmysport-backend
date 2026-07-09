@@ -3,6 +3,7 @@ package com.bookmysport.backend.user.controller;
 import com.bookmysport.backend.common.ResponseApiDto.ApiResponse;
 import com.bookmysport.backend.security.models.SecurityUser;
 import com.bookmysport.backend.user.dto.Response.UserBookingsResponseDto;
+import com.bookmysport.backend.user.dto.Response.UserDashBoardResponse;
 import com.bookmysport.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -46,5 +47,12 @@ public class UserController {
                         .data(null)
                         .build());
 
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<ApiResponse<UserDashBoardResponse>> userDashBoard(@AuthenticationPrincipal SecurityUser securityUser){
+
+        UserDashBoardResponse userDashBoardResponse = userService.userDashBoardResponse(securityUser.getUser().getId());
+        return ResponseEntity.ok(ApiResponse.success("User Dashboard Details ",userDashBoardResponse));
     }
 }

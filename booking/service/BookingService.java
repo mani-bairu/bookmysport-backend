@@ -1,5 +1,6 @@
 package com.bookmysport.backend.booking.service;
 
+import com.bookmysport.backend.booking.dto.BookingDetailsDto;
 import com.bookmysport.backend.booking.dto.BookingResponseDto;
 import com.bookmysport.backend.booking.entity.BookingEntity;
 import com.bookmysport.backend.booking.mapper.BookingMapper;
@@ -8,18 +9,22 @@ import com.bookmysport.backend.common.enums.BookingStatus;
 import com.bookmysport.backend.exception.BadRequestException;
 import com.bookmysport.backend.exception.BookingException;
 import com.bookmysport.backend.exception.ResourseNotFoundException;
+import com.bookmysport.backend.notification.service.NotificationService;
 import com.bookmysport.backend.slot.entity.SlotEntity;
 import com.bookmysport.backend.slot.entity.SlotStatus;
 import com.bookmysport.backend.slot.respository.SlotRepository;
 import com.bookmysport.backend.websocket.dto.SlotEvent;
 import com.bookmysport.backend.websocket.service.SlotWebSocketService;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -30,6 +35,8 @@ public class BookingService {
     private final StringRedisTemplate redisTemplate;
     private final SlotWebSocketService webSocketService;
     private final BookingMapper bookingMapper;
+
+    private final NotificationService notificationService;
 
     public BookingResponseDto createBooking(Long slotId, Long userId) {
 
@@ -53,14 +60,6 @@ public class BookingService {
             throw new BadRequestException("Lock expired");
         }
 
-//        BookingEntity existingBooking =
-//                bookingRepository.findBySlotIdAndStatus(
-//                        slotId,
-//                        BookingStatus.PENDING_PAYMENT);
-//
-//        if (existingBooking != null) {
-//            throw new BookingException("Booking already in progress.");
-//        }
 
         // 4. Create booking
         BookingEntity booking = BookingEntity.builder()
@@ -90,12 +89,8 @@ public class BookingService {
 
 
 
-
-
-
-
     @Transactional
-    public BookingEntity confirmBooking(Long bookingId) {
+    public BookingEntity confirmBooking(Long bookingId) throws MessagingException, IOException {
 
         BookingEntity booking =
                 bookingRepository.findById(bookingId)
@@ -117,6 +112,14 @@ public class BookingService {
         booking.setStatus(
                 BookingStatus.CONFIRMED
         );
+      BookingEntity userBooking = bookingRepository.findById(bookingId)
+              .orElseThrow(()-> new ResourseNotFoundException("booking not found"));
+
+        BookingDetailsDto bookingDetailsDto = bookingRepository.userBookedDetails(bookingId);
+
+        notificationService.sendBookingConfirmation(bookingDetailsDto);
+
+
 
 
         return bookingRepository.save(booking);
