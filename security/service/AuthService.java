@@ -35,18 +35,14 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    AuthenticationManager authManager;
+    private final AuthenticationManager authManager;
 
-    @Autowired
-    JwtService jwtService;
+    private final JwtService jwtService;
 
     private final NotificationService notificationService;
 

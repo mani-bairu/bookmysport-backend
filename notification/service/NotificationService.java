@@ -84,7 +84,7 @@ public class NotificationService {
                                 String.valueOf(booking.getSlotEndTime())
                         )
                         .replace(
-                                "{{endTime}}",
+                                "{{amount}}",
                                 String.valueOf(booking.getSlotPrice())
                         );
 

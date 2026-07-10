@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,8 @@ public class JwtAuthenticationFilter
 
     private final CustomerDetailService
             customUserDetailsService;
+
+    private final StringRedisTemplate redisTemplate;
 
 
 
@@ -63,6 +66,14 @@ public class JwtAuthenticationFilter
 
         String jwtToken =
                 authHeader.substring(7);
+
+//         Check if token is blacklisted in Redis
+
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("blackList:"+jwtToken))){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token has been revoked");
+        }
+
 
         String email =
                 jwtService.extractUsername(jwtToken);
