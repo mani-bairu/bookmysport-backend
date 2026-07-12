@@ -15,7 +15,7 @@ public class SlotGenerationScheduler {
     private final SlotGenerationService slotGenerationService;
 
 
-//  @Scheduled(cron = "${slot.scheduler.cron}") // Every day at 1:00 AM
+  @Scheduled(cron = "${slot.scheduler.cron}") // Every day at 1:00 AM
     public void generateSlot(){
 
         log.info("========== Slot Generation Started ==========");
