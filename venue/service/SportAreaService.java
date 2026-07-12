@@ -14,15 +14,19 @@ import com.bookmysport.backend.venue.mapper.SportAreaMapper;
 import com.bookmysport.backend.venue.repository.SportAreaRepository;
 import com.bookmysport.backend.venue.repository.VenueRepository;
 import com.bookmysport.backend.venue.utils.SlotTimeValidation;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ public class SportAreaService {
 
     private final VenueRepository venueRepository;
     private final SportAreaRepository sportAreaRepository;
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
 
 
 //    Owner Access methods
@@ -45,6 +51,10 @@ public class SportAreaService {
         SportAreaEntity entity = SportAreaMapper.toEntity(dto, venue);
         entity.setSlotsInitialized(false);
         SportAreaEntity save = sportAreaRepository.save(entity);
+
+        String key = "venue:sportAreas:" + venue.getId();
+        redisTemplate.delete(key);
+
         return SportAreaMapper.toResponseDto(save);
 
     }
@@ -68,12 +78,39 @@ public class SportAreaService {
 //    public access
 
     @Transactional(readOnly = true)
-    public List<SportAreaResponseDto> getSportAres(Long venueId){
+    public List<SportAreaResponseDto> getSportAres(Long venueId) {
+
+        System.out.println("fetching sport areas");
+
+        String key = "venue:sportAreas:" + venueId;
+       try{
+           String cached = redisTemplate.opsForValue().get(key);
+           if(cached != null) {
+               System.out.println("sportAreas loaded from redis cache");
+               return objectMapper.readValue(cached,
+                       objectMapper.getTypeFactory()
+                               .constructCollectionType(List.class, SportAreaResponseDto.class));
+
+
+           }
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
 
         List<SportAreaEntity> spotAres = sportAreaRepository.findByVenue_IdAndStatus(venueId, AreaStatus.ACTIVE);
-        return spotAres.stream()
+        System.out.println("sportAreas loaded from data base");
+        List<SportAreaResponseDto> sportAreaslist = spotAres.stream()
                 .map(SportAreaMapper::toResponseDto)
                 .toList();
+        try{
+            String json = objectMapper.writeValueAsString(sportAreaslist);
+            redisTemplate.opsForValue().set(key,json,1, TimeUnit.DAYS);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return sportAreaslist;
+
 
     }
 

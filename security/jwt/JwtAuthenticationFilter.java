@@ -2,11 +2,13 @@ package com.bookmysport.backend.security.jwt;
 
 
 import com.bookmysport.backend.security.service.CustomerDetailService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter
         extends OncePerRequestFilter {
 
@@ -44,15 +47,7 @@ public class JwtAuthenticationFilter
             filterChain.doFilter(request, response);
             return;
         }
-
-        System.out.println("JWT FILTER HIT");
-        // ... rest of your existing code
-
-        System.out.println("JWT FILTER HIT");
-
-        System.out.println(
-                request.getHeader("Authorization")
-        );
+        log.debug("JWT filter processing request: {}", request.getRequestURI());
 
         final String authHeader =
                 request.getHeader("Authorization");
@@ -65,13 +60,14 @@ public class JwtAuthenticationFilter
         }
 
         String jwtToken =
-                authHeader.substring(7);
+                authHeader.substring("Bearer ".length());
 
 //         Check if token is blacklisted in Redis
 
         if(Boolean.TRUE.equals(redisTemplate.hasKey("blackList:"+jwtToken))){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token has been revoked");
+            return;
         }
 
 
@@ -87,26 +83,47 @@ public class JwtAuthenticationFilter
                     customUserDetailsService
                             .loadUserByUsername(email);
 
-            if (jwtService.isTokenValid(
-                    jwtToken,
-                    userDetails
-            )) {
+            try {
+                if (jwtService.isTokenValid(
+                        jwtToken,
+                        userDetails
+                )) {
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
 
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authToken);
+                }
+            }catch (ExpiredJwtException e) {
+                // Token expired — return 401
+                log.warn("JWT token expired: {}", e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"success\":false,\"message\":\"Token expired. Please login again.\"}"
                 );
+                return;
 
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authToken);
+            } catch (Exception e) {
+                // Any other JWT error — return 401
+                log.warn("JWT token invalid: {}", e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"success\":false,\"message\":\"Invalid token. Please login again.\"}"
+                );
+                return;
             }
         }
 

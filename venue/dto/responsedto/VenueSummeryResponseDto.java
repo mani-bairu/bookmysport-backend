@@ -1,6 +1,7 @@
 package com.bookmysport.backend.venue.dto.responsedto;
 
 import com.bookmysport.backend.common.enums.SportType;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Builder;
 import lombok.Data;
 

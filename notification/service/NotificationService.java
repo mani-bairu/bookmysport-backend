@@ -86,6 +86,12 @@ public class NotificationService {
                         .replace(
                                 "{{amount}}",
                                 String.valueOf(booking.getSlotPrice())
+                        )
+                        .replace(
+                                "{{bookingId}}",
+                                String.valueOf(booking.getBookedUserId())
+                                        +booking.getBookedSlotId()
+                                        +booking.getBookingId()
                         );
 
 

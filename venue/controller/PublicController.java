@@ -22,6 +22,7 @@ public class PublicController {
     private final VenueService venueService;
     private final SportAreaService sportAreaService;
 
+
     /**
      * Get venues by city
      *

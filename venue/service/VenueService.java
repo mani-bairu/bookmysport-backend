@@ -12,15 +12,18 @@ import com.bookmysport.backend.venue.dto.responsedto.VenueSummeryResponseDto;
 import com.bookmysport.backend.venue.entity.VenueEntity;
 import com.bookmysport.backend.venue.mapper.VenueMapper;
 import com.bookmysport.backend.venue.repository.VenueRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
-
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -29,11 +32,18 @@ public class VenueService {
 
     private final UserRepository userRepository;
     private final VenueRepository venueRepository;
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
 
     public VenueService(UserRepository userRepository,
-                        VenueRepository venueRepository) {
+                        VenueRepository venueRepository,
+                        StringRedisTemplate redisTemplate,
+                        ObjectMapper objectMapper) {
+
         this.userRepository = userRepository;
         this.venueRepository = venueRepository;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -47,6 +57,10 @@ public class VenueService {
         VenueEntity entity = VenueMapper.toEntity(dto, owner);
 
         VenueEntity save = venueRepository.save(entity);
+
+        // Delete cache for that city — so next request fetches fresh data
+        String key = "venues:city:" + dto.getCity();
+        redisTemplate.delete(key);
 
         VenueFullDetailsResponseDTo responseDto = VenueMapper.toResponseDto(save);
 
@@ -87,22 +101,71 @@ public class VenueService {
     // Public Access methods
 
 
+//    get venues by cities
     @Transactional(readOnly = true)
     public List<VenueSummeryResponseDto> getVenues(String city){
+
+        String key = "venues:city:"+city;
+        try {
+            String cached= redisTemplate.opsForValue().get(key);
+            if(cached!=null){
+                System.out.println("Venues data loaded from redis cache");
+                return objectMapper.readValue(cached,
+                        objectMapper.getTypeFactory()
+                                .constructCollectionType(List.class,VenueSummeryResponseDto.class));
+            }
+
+        }catch (Exception e){
+
+        System.out.println("Cache read error: " + e.getMessage());
+
+        }
         List<VenueEntity> venues = venueRepository.findByCityAndStatus(city, VenueStatus.APPROVED);
         if(venues.isEmpty()){
             throw new ResourseNotFoundException("Venues Not Found");
         }
-        return venues.stream()
+        System.out.println("Venues data loaded from Data-base");
+
+        List<VenueSummeryResponseDto> venuesList = venues.stream()
                 .map(VenueMapper::toSummeryResponseDto)
                 .toList();
+        try{
+            String json = objectMapper.writeValueAsString(venuesList);
+            redisTemplate.opsForValue().set(key,json, 1, TimeUnit.DAYS);
+
+        } catch (Exception e) {
+            System.out.println("Cache write error: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return venuesList;
     }
 
     @Transactional(readOnly = true)
     public VenueFullDetailsResponseDTo getVenue(Long venueId){
+
+        String key = "venue:sportAreas:" + venueId;
+        try{
+            String cached = redisTemplate.opsForValue().get(key);
+            if(cached!=null){
+                System.out.println("venue and SportArea details loaded from redis cache");
+                return objectMapper.readValue(cached,objectMapper.getTypeFactory().constructType(VenueFullDetailsResponseDTo.class));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         VenueEntity byIdAndOwnerId = venueRepository.findByIdAndStatus(venueId,VenueStatus.APPROVED)
                 .orElseThrow(()-> new ResourseNotFoundException("Venue not found"));
-        return  VenueMapper.toResponseDto(byIdAndOwnerId);
+        VenueFullDetailsResponseDTo responseDto = VenueMapper.toResponseDto(byIdAndOwnerId);
+
+        System.out.println("venue and SportArea details loaded from DataBase");
+        try {
+            String json = objectMapper.writeValueAsString(responseDto);
+            redisTemplate.opsForValue().set(key,json,1,TimeUnit.DAYS);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return responseDto;
     }
 
     @Transactional(readOnly = true)

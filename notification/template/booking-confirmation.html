@@ -7,193 +7,188 @@
 </head>
 <body style="margin:0;padding:0;background:#F4F6F9;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F6F9;padding:40px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F4F6F9;padding:40px 16px;">
     <tr>
         <td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+            <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
 
-                <!-- Header -->
+                <!-- Card -->
                 <tr>
-                    <td style="background:#1A56DB;padding:32px 40px 28px;">
+                    <td style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+                        <!-- Header -->
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td>
-                    <span style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">
-                      BookMySport
-                    </span>
-                                </td>
-                                <td align="right">
-                    <span style="display:inline-block;background:#16A34A;border-radius:100px;padding:4px 12px;font-size:12px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">
-                      Confirmed
-                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="padding-top:20px;">
-                                    <h1 style="margin:0;font-size:24px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">
-                                        Booking Confirmed!
-                                    </h1>
-                                    <p style="margin:8px 0 0;font-size:14px;color:rgba(255,255,255,0.75);line-height:1.5;">
-                                        Your sport slot has been successfully reserved
-                                    </p>
+                                <td style="background:#1A56DB;padding:28px 32px 24px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                          <span style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:8px;padding:5px 12px;font-size:13px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">
+                            BookMySport
+                          </span>
+                                            </td>
+                                            <td align="right">
+                          <span style="display:inline-block;background:#16A34A;border-radius:100px;padding:4px 12px;font-size:12px;font-weight:700;color:#ffffff;">
+                            Confirmed
+                          </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="padding-top:16px;">
+                                                <h1 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">
+                                                    Booking Confirmed!
+                                                </h1>
+                                                <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.75);">
+                                                    Your sport slot has been successfully reserved
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
-                    </td>
-                </tr>
 
-                <!-- Greeting -->
-                <tr>
-                    <td style="padding:32px 40px 0;">
-                        <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;">
-                            Hi <strong>{{userName}}</strong>,
-                        </p>
-                        <p style="margin:10px 0 0;font-size:15px;color:#374151;line-height:1.6;">
-                            Your booking is confirmed. Here are your slot details:
-                        </p>
-                    </td>
-                </tr>
-
-                <!-- Booking Details Card -->
-                <tr>
-                    <td style="padding:24px 40px;">
-                        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFF;border:1.5px solid #C7D9FF;border-radius:10px;overflow:hidden;">
-
-                            <!-- Venue -->
-                            <tr>
-                                <td style="padding:16px 20px;border-bottom:1px solid #E5E7EB;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;width:40%;">
-                                                Venue
-                                            </td>
-                                            <td style="font-size:14px;font-weight:600;color:#111827;text-align:right;">
-                                                {{venueName}}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-                            <!-- Sport -->
-                            <tr>
-                                <td style="padding:16px 20px;border-bottom:1px solid #E5E7EB;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;width:40%;">
-                                                Sport
-                                            </td>
-                                            <td style="font-size:14px;font-weight:600;color:#111827;text-align:right;">
-                                                {{sportName}}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-                            <!-- Date -->
-                            <tr>
-                                <td style="padding:16px 20px;border-bottom:1px solid #E5E7EB;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;width:40%;">
-                                                Date
-                                            </td>
-                                            <td style="font-size:14px;font-weight:600;color:#111827;text-align:right;">
-                                                {{date}}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-                            <!-- Time -->
-                            <tr>
-                                <td style="padding:16px 20px;border-bottom:1px solid #E5E7EB;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;width:40%;">
-                                                Time Slot
-                                            </td>
-                                            <td style="font-size:14px;font-weight:600;color:#111827;text-align:right;">
-                                                {{startTime}} – {{endTime}}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-                            <!-- Amount -->
-                            <tr>
-                                <td style="padding:16px 20px;background:#EBF2FF;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td style="font-size:11px;font-weight:600;color:#1A56DB;text-transform:uppercase;letter-spacing:1px;width:40%;">
-                                                Amount Paid
-                                            </td>
-                                            <td style="font-size:20px;font-weight:700;color:#1A56DB;text-align:right;">
-                                                ₹{{amount}}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-                        </table>
-                    </td>
-                </tr>
-
-                <!-- Note -->
-                <tr>
-                    <td style="padding:0 40px 28px;">
-                        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;">
-                            <tr>
-                                <td style="padding:12px 16px;">
-                                    <p style="margin:0;font-size:13px;color:#15803D;line-height:1.5;">
-                                        Please arrive 10 minutes before your slot time. Bring your booking confirmation for verification at the venue.
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-                <!-- Thank you -->
-                <tr>
-                    <td style="padding:0 40px 32px;">
-                        <p style="margin:0;font-size:14px;color:#6B7280;line-height:1.6;">
-                            Thank you for choosing <strong style="color:#1A56DB;">BookMySport</strong>. We hope you have a great game!
-                        </p>
-                    </td>
-                </tr>
-
-                <!-- Divider -->
-                <tr>
-                    <td style="padding:0 40px;">
-                        <hr style="border:none;border-top:1px solid #E5E7EB;margin:0;"/>
-                    </td>
-                </tr>
-
-                <!-- Footer -->
-                <tr>
-                    <td style="padding:24px 40px 32px;">
+                        <!-- Greeting -->
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td>
-                                    <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#111827;">
-                                        BookMySport
+                                <td style="padding:28px 32px 20px;">
+                                    <p style="margin:0;font-size:15px;color:#374151;line-height:1.6;">
+                                        Hi <strong>{{userName}}</strong>,
                                     </p>
-                                    <p style="margin:0;font-size:12px;color:#9CA3AF;line-height:1.5;">
-                                        Book cricket turfs, football grounds and badminton courts — instantly.
-                                    </p>
-                                </td>
-                                <td align="right" valign="top">
-                                    <p style="margin:0;font-size:12px;color:#9CA3AF;">
-                                        © 2026 BookMySport
+                                    <p style="margin:10px 0 0;font-size:15px;color:#374151;line-height:1.6;">
+                                        Your booking is confirmed. Here are your slot details:
                                     </p>
                                 </td>
                             </tr>
                         </table>
+
+                        <!-- Booking Details Table -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:0 32px 24px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border:1.5px solid #E5E7EB;border-radius:10px;overflow:hidden;">
+
+                                        <!-- Venue -->
+                                        <tr>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;background:#F8FAFF;width:40%;">
+                                                <span style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Venue</span>
+                                            </td>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;background:#F8FAFF;">
+                                                <span style="font-size:14px;font-weight:600;color:#111827;">{{venueName}}</span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Sport -->
+                                        <tr>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;width:40%;">
+                                                <span style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Sport</span>
+                                            </td>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;">
+                                                <span style="font-size:14px;font-weight:600;color:#111827;">{{sportName}}</span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Date -->
+                                        <tr>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;background:#F8FAFF;width:40%;">
+                                                <span style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Date</span>
+                                            </td>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;background:#F8FAFF;">
+                                                <span style="font-size:14px;font-weight:600;color:#111827;">{{date}}</span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Time Slot -->
+                                        <tr>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;width:40%;">
+                                                <span style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Time Slot</span>
+                                            </td>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;">
+                                                <span style="font-size:14px;font-weight:600;color:#111827;">{{startTime}} – {{endTime}}</span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Booking ID -->
+                                        <tr>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;background:#F8FAFF;width:40%;">
+                                                <span style="font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Booking ID</span>
+                                            </td>
+                                            <td style="padding:14px 20px;border-bottom:1px solid #F3F4F6;background:#F8FAFF;">
+                                                <span style="font-size:14px;font-weight:600;color:#111827;font-family:'Courier New',monospace;">BMS{{bookingId}}</span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Amount -->
+                                        <tr>
+                                            <td style="padding:16px 20px;background:#EBF2FF;width:40%;">
+                                                <span style="font-size:11px;font-weight:600;color:#1A56DB;text-transform:uppercase;letter-spacing:1px;">Amount Paid</span>
+                                            </td>
+                                            <td style="padding:16px 20px;background:#EBF2FF;">
+                                                <span style="font-size:20px;font-weight:700;color:#1A56DB;">₹{{amount}}</span>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Note -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:0 32px 28px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;">
+                                        <tr>
+                                            <td style="padding:14px 18px;">
+                                                <p style="margin:0;font-size:13px;color:#15803D;line-height:1.6;">
+                                                    Please arrive <strong>10 minutes before</strong> your slot time. Bring your booking confirmation for verification at the venue.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Thank you -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:0 32px 28px;">
+                                    <p style="margin:0;font-size:14px;color:#6B7280;line-height:1.6;">
+                                        Thank you for choosing <strong style="color:#1A56DB;">BookMySport</strong>. We hope you have a great game!
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Divider -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:0 32px;">
+                                    <hr style="border:none;border-top:1px solid #E5E7EB;margin:0;"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Footer -->
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:20px 32px 28px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <p style="margin:0 0 3px;font-size:13px;font-weight:600;color:#111827;">Team BookMySport</p>
+                                                <p style="margin:0;font-size:12px;color:#9CA3AF;">Book cricket turfs, football grounds and badminton courts — instantly.</p>
+                                            </td>
+                                            <td align="right" valign="top">
+                                                <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 BookMySport</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
                     </td>
                 </tr>
 

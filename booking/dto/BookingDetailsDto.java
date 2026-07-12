@@ -17,6 +17,9 @@ import java.time.LocalTime;
 public class BookingDetailsDto {
 
 
+    private Long bookedUserId;
+    private long bookedSlotId;
+    private Long bookingId;
     private String userEmail;
     private String userName;
     private String venueName;

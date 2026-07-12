@@ -6,6 +6,7 @@ import com.bookmysport.backend.venue.entity.SportAreaEntity;
 import com.bookmysport.backend.venue.repository.SportAreaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,7 +17,8 @@ import java.util.List;
 @Slf4j
 public class SlotGenerationService {
 
-    private static final int SLOT_WINDOW_DAYS = 3;
+    @Value("${generate.slots.days.ahead}")
+    private int SLOT_WINDOW_DAYS;
 
     private final SportAreaRepository sportAreaRepository;
 

@@ -15,6 +15,9 @@ import com.bookmysport.backend.venue.entity.VenueEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -32,8 +35,13 @@ public class UserService {
        UserEntity userEntity = userRepository.findById(userId)
                .orElseThrow(()-> new ResourseNotFoundException("User Not Found"));
 
+       ArrayList<BookingStatus> statuses = new ArrayList<>(Arrays.asList(
+               BookingStatus.CONFIRMED,
+               BookingStatus.CANCELLED
+       ));
+
        List<UserBookingsResponseDto> userBookings = userRepository.
-               userBookingList(userEntity.getId(), BookingStatus.CONFIRMED);
+               userBookingList(userEntity.getId(), statuses);
        return userBookings;
 
    }

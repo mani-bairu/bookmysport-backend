@@ -9,17 +9,23 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<BookingEntity,Long> {
 
-    BookingEntity findBySlotIdAndStatus(Long slotId, BookingStatus status);
+//    BookingEntity findBySlotIdAndStatus(Long slotId, BookingStatus status);
 
     List<BookingEntity> findByUserId(Long id);
+
+    Optional<BookingEntity> findBySlotIdAndStatus(Long slotId, BookingStatus status);
 
 
     @Query("""
             select new com.bookmysport.backend.booking.dto.BookingDetailsDto(
+            b.userId,
+            b.slotId,
+            b.id,
             u.email,
             u.name,
             v.venueName,

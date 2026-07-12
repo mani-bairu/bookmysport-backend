@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,12 +37,12 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
             JOIN SportAreaEntity sa
                 ON s.sportAreaId = sa.id
             WHERE b.userId = :userId
-            AND b.status =:status
+            AND b.status IN (:statuses)
             ORDER BY b.bookedDate DESC , b.slotStartTime ASC
             """)
     List<UserBookingsResponseDto> userBookingList(
             @Param("userId") Long userId,
-            @Param("status")BookingStatus status
+            @Param("statuses") List<BookingStatus> statuses
             );
 
 

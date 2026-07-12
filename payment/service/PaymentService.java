@@ -18,6 +18,7 @@ import com.razorpay.Order;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import static com.bookmysport.backend.payment.enums.PaymentStatus.SUCCESS;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
 
     private final BookingService bookingService;
@@ -60,6 +62,7 @@ public class PaymentService {
         // 2. Validate booking
 
         if (booking.getStatus() != BookingStatus.PENDING_PAYMENT) {
+            log.warn("Booking:{} is status is not in Payment_Pending",bookingId);
             throw new BadRequestException(
                     "Booking is not eligible for payment"
             );
@@ -79,6 +82,7 @@ public class PaymentService {
 
 
         paymentRepository.save(payment);
+        log.info("payment is created for the booking:{}",booking.getId());
 
 
 
@@ -101,16 +105,12 @@ public class PaymentService {
                 );
 
 
-        String razorpayOrderId =
-                order.get("id");
-
-
+        String razorpayOrderId = order.get("id");
 
         // 6. Save gateway order id
 
-        payment.setGatewayOrderId(
-                razorpayOrderId
-        );
+        payment.setGatewayOrderId(razorpayOrderId);
+        log.info("PaymentService sent a create order request to razorpay service of booking:{}",booking.getId());
 
 
         paymentRepository.save(payment);
@@ -129,18 +129,22 @@ public class PaymentService {
     }
 
     @Transactional
-    public void verifyPayment(
-            VerifyPaymentRequestDto request
-    ) throws MessagingException, IOException {
+    public void verifyPayment(VerifyPaymentRequestDto request) throws MessagingException, IOException {
+
+        log.info("payment in verification process");
 
 
-        PaymentEntity payment =
-                paymentRepository.findById(request.getPaymentId())
+        PaymentEntity payment = paymentRepository.findById(request.getPaymentId())
                         .orElseThrow(
                                 () -> new ResourseNotFoundException(
                                         "Payment not found"
                                 )
                         );
+
+        BookingEntity booking = bookingRepository.findById(payment.getBooking().getId())
+                .orElseThrow(() -> new ResourseNotFoundException("Booking not found"));
+
+        log.info("received verification detials from Razorpay of payment:{}",request.getPaymentId());
 
 
         boolean verified =
@@ -153,77 +157,28 @@ public class PaymentService {
 
         if (!verified) {
 
-            payment.setStatus(
-                    PaymentStatus.FAILED
-            );
-
-            paymentRepository.save(payment);
-
-
-            throw new BadRequestException(
-                    "Payment verification failed"
-            );
-        }
-
-//        payment.setStatus(SUCCESS);
-//
-//        paymentRepository.save(payment);
+           payment.setStatus(PaymentStatus.FAILED);
+           log.warn("payment:{} verification is failed",request.getPaymentId());
+           paymentRepository.save(payment);
+           bookingService.cancelBooking(booking.getId(),booking.getUserId());
+           throw new BadRequestException("Payment verification failed");}
 
 
 
-        payment.setGatewayOrderId(
-                request.getRazorpayOrderId()
-        );
 
 
-        payment.setGatewayPaymentId(
-                request.getRazorpayPaymentId()
-        );
 
-
-        payment.setGatewaySignature(
-                request.getRazorpaySignature()
-        );
-
-
-        payment.setStatus(
-                SUCCESS
-        );
-
+        payment.setGatewayOrderId(request.getRazorpayOrderId());
+        payment.setGatewayPaymentId(request.getRazorpayPaymentId());
+        payment.setGatewaySignature(request.getRazorpaySignature());
+        payment.setStatus(SUCCESS);
 
         paymentRepository.save(payment);
-
-
-
+        log.info("payment:{} verification is success",request.getPaymentId());
         // 5. Now confirm booking
-
-        BookingEntity booking =
-                payment.getBooking();
-
-
-        bookingService.confirmBooking(
-                booking.getId()
-        );
-
-
+        bookingService.confirmBooking(booking.getId());
         // 6. Now book slot
-
-        slotService.confirmSlotBooking(
-                booking.getSlotId()
-        );
-
-
-
-    /*
-       Next step:
-
-       bookingService.confirmBooking(payment.getBooking().getId());
-
-       slotService.confirmSlot(
-              payment.getBooking().getSlot().getId()
-       );
-
-    */
+        slotService.confirmSlotBooking(booking.getSlotId());
 
     }
 }
