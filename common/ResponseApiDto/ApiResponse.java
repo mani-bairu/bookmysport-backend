@@ -20,8 +20,8 @@ public class ApiResponse<T>{
         return new ApiResponse<>(true, message, data, null);
     }
 
-    public static <T> ApiResponse<T> error(String error) {
-        return new ApiResponse<>(false, null, null, LocalDateTime.now());
+    public static <T> ApiResponse<T> error( T data) {
+        return new ApiResponse<>(false, null, data, LocalDateTime.now());
     }
 
 }

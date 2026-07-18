@@ -2,10 +2,9 @@ package com.bookmysport.backend.security.contoller;
 
 
 import com.bookmysport.backend.common.ResponseApiDto.ApiResponse;
-import com.bookmysport.backend.security.dtos.requestDto.OtpRequestDto;
-import com.bookmysport.backend.security.dtos.requestDto.loginRequestDto;
-import com.bookmysport.backend.security.dtos.requestDto.registerRequestDto;
+import com.bookmysport.backend.security.dtos.requestDto.*;
 import com.bookmysport.backend.security.dtos.responseDto.authResponseDto;
+import com.bookmysport.backend.security.models.SecurityUser;
 import com.bookmysport.backend.security.service.AuthService;
 import com.bookmysport.backend.security.utils.OtpService;
 import jakarta.mail.MessagingException;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -68,6 +68,37 @@ public class AuthController {
 
 
     }
+
+//    forget password
+
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>> forgotPassword(
+            @Valid @RequestBody ForgetPasswordRequestDto dto) throws MessagingException, IOException {
+
+        authService.forgotPassword(dto.getEmail());
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Password reset link sent to your email", null)
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequestDto request) {
+
+        authService.resetPassword(request.getToken(), request.getNewPassword());
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Password reset successfully.", "Password reset successfully. Please login.")
+        );
+    }
+
+
+
+
+
+
 
     @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/welcome_owner")

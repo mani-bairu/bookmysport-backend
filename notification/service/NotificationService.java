@@ -11,16 +11,23 @@ import com.bookmysport.backend.venue.entity.VenueEntity;
 import com.bookmysport.backend.venue.repository.VenueRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalTime;
 import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
 
     private final EmailService emailService;
@@ -31,67 +38,50 @@ public class NotificationService {
 
     private final VenueRepository venueRepository;
 
-    String path = "src/main/java/com/bookmysport/backend/notification/template/";
+    private final ResourceLoader resourceLoader;
 
 
+    private String loadTemplate(String fileName) throws IOException {
+
+        Resource resource = resourceLoader.getResource(
+                "classpath:template/" + fileName
+        );
+
+        try (InputStream inputStream = resource.getInputStream()) {
+
+            return new String(
+                    inputStream.readAllBytes(),
+                    StandardCharsets.UTF_8
+            );
+        }
+    }
 
     public void sendBookingConfirmation(
             BookingDetailsDto booking
     ) throws IOException, MessagingException {
 
-//        String path = "src/main/java/com/bookmysport/backend/notification/template/";
-
-//        UserEntity user= userRepository.findById(booking.getUserId())
-//                .orElseThrow(()-> new ResourseNotFoundException("user not found"));
-//
-//        SlotEntity slot = slotRepository.findById(booking.getSlotId()).
-//                orElseThrow(()-> new ResourseNotFoundException("slot not found"));
-//
-//
-//        VenueEntity venue = venueRepository.findById(slot.getVenueId())
-//                .orElseThrow(() -> new ResourseNotFoundException("Venue Not Found!"));
-
-
         // 1. Load HTML template
-        String template = Files.readString(Path.of(path+ "booking-confirmation.html"));
+        String template = loadTemplate("booking-confirmation.html");
+
+
+//        // 1. Load HTML template
+//        String template = Files.readString(Path.of(path+ "booking-confirmation.html"));
 
 
         // 2. Replace dynamic values
 
-        String emailContent = template.replace("{{userName}}", booking.getUserName())
-                        .replace(
-                                "{{venueName}}",
-                                booking.getVenueName()
-                        )
-                        .replace(
-                                "{{sportName}}",
-                                booking.getSportAreaName()
-
-                        ).replace(
-                        "{{date}}",
-                        String.valueOf(booking.getBookedDate())
-                        )
-
-
-
-
-                        .replace(
-                                "{{startTime}}",
-                                String.valueOf(booking.getSlotStartTime())
-                        )
-                        .replace(
-                                "{{endTime}}",
-                                String.valueOf(booking.getSlotEndTime())
-                        )
-                        .replace(
-                                "{{amount}}",
-                                String.valueOf(booking.getSlotPrice())
-                        )
-                        .replace(
-                                "{{bookingId}}",
-                                String.valueOf(booking.getBookedUserId())
-                                        +booking.getBookedSlotId()
-                                        +booking.getBookingId()
+        String emailContent = template
+                .replace("{{userName}}", booking.getUserName())
+                .replace("{{venueName}}", booking.getVenueName())
+                .replace("{{sportName}}", booking.getSportAreaName())
+                .replace("{{date}}", String.valueOf(booking.getBookedDate()))
+                .replace("{{startTime}}", formatTime(booking.getSlotStartTime()))
+                .replace("{{endTime}}", formatTime(booking.getSlotEndTime()))
+                .replace("{{amount}}", String.valueOf(booking.getSlotPrice()))
+                .replace("{{bookingId}}",
+                        String.valueOf(booking.getBookedUserId())
+                                    +booking.getBookedSlotId()
+                                    +booking.getBookingId()
                         );
 
 
@@ -111,13 +101,8 @@ public class NotificationService {
     ) throws IOException, MessagingException {
 
 
-        String template =
-                Files.readString(
-                        Path.of(
-                                path + "welcome-email.html"
-                        )
-                );
-
+        // 1. Load HTML template
+        String template = loadTemplate("welcome-email.html");
 
         String content =
                 template.replace(
@@ -137,7 +122,8 @@ public class NotificationService {
 
         try {
 
-            String template = Files.readString(Path.of(path + "otp-email.html"));
+            // 1. Load HTML template
+            String template = loadTemplate("otp-email.html");
 
             String content = template.replace("{{otp}}", otp);
 
@@ -150,6 +136,35 @@ public class NotificationService {
             throw new RuntimeException(e);
         }
     }
+
+    public void sendPasswordResetEmail(String email, String name, String resetLink)
+            throws MessagingException, IOException {
+
+        String template = loadTemplate("password-reset-email.html");
+        String content = template
+                .replace("{{userName}}", name)
+                .replace("{{resetLink}}", resetLink);
+
+        emailService.sendHtmlEmail(email, "Reset your BookMySport password", content);
+        log.info("Password reset email sent to:{}", email);
+    }
+
+
+
+
+
+    private String formatTime(LocalTime time) {
+        if (time == null) return "—";
+        int hour = time.getHour();
+        String ampm = hour >= 12 ? "PM" : "AM";
+        int hour12 = hour % 12;
+        if (hour12 == 0) hour12 = 12;
+        return hour12 + " " + ampm;
+    }
+
+
+
+
 
 
 }

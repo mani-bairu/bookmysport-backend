@@ -12,8 +12,9 @@ import java.util.List;
 @Builder
 public class VenueSummeryResponseDto {
 
-    private Long          id;
-    private String        name;
-    private String        city;
+    private Long id;
+    private String name;
+    private String city;
+    private String address;
     private List<SportType> sports;
 }

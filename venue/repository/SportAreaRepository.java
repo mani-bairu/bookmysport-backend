@@ -65,4 +65,6 @@ public interface SportAreaRepository extends JpaRepository<SportAreaEntity,Long>
         AND sa.status = com.bookmysport.backend.common.enums.AreaStatus.ACTIVE
     """)
     List<SportAreaEntity> findAllValidSportAreas();
+
+
 }

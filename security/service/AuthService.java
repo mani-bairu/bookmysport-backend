@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -142,7 +144,64 @@ public class AuthService {
                     .email(securityUser.getUsername())
                     .role(securityUser.getRole())
                     .token(responseToken)
+                    .name(securityUser.getUser().getName())
                     .build();
 
+    }
+
+//    forget password
+
+
+    @Value("${frontend.url}")
+    private String baseUrl;
+
+    // Forgot password — send reset link to email
+    public void forgotPassword(String email) throws MessagingException, IOException {
+
+        // 1. Check user exists
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourseNotFoundException("No account found with this email"));
+
+        // 2. Generate random token
+        String token = UUID.randomUUID().toString();
+
+        // 3. Store in Redis — "reset:{token}" → userId, TTL 15 min
+        redisTemplate.opsForValue().set(
+                "reset:" + token,
+                String.valueOf(user.getId()),
+                15, TimeUnit.MINUTES
+        );
+
+        // 4. Build reset link
+        String resetLink = baseUrl + "/reset-password?token=" + token;
+
+        // 5. Send email
+        notificationService.sendPasswordResetEmail(email, user.getName(), resetLink);
+
+        log.info("Password reset link sent to user:{}", email);
+    }
+
+    // Reset password — update password using token
+    public void resetPassword(String token, String newPassword) {
+
+        // 1. Get userId from Redis
+        String userId = redisTemplate.opsForValue().get("reset:" + token);
+
+        if (userId == null) {
+            throw new BadRequestException("Reset link has expired or is invalid. Please request a new one.");
+        }
+
+        // 2. Find user
+        UserEntity user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new ResourseNotFoundException("User not found"));
+
+        // 3. Update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        log.info("Password reset successfully for user:{}", user.getEmail());
+
+        // 4. Delete token from Redis — single use
+        redisTemplate.delete("reset:" + token);
+        log.info("Reset token deleted from Redis");
     }
 }

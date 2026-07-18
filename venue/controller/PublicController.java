@@ -29,23 +29,23 @@ public class PublicController {
      * Example:
      * /api/v1/venues?city=Penang
      */
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<VenueSummeryResponseDto>>> getVenues(
-            @RequestParam String city
-    ) {
-
-        List<VenueSummeryResponseDto> response =
-                venueService.getVenues(city);
-
-        return ResponseEntity.ok(
-                ApiResponse.<List<VenueSummeryResponseDto>>builder()
-                        .success(true)
-                        .message("Venues fetched successfully")
-                        .timestamp(LocalDateTime.now())
-                        .data(response)
-                        .build()
-        );
-    }
+//    @GetMapping
+//    public ResponseEntity<ApiResponse<List<VenueSummeryResponseDto>>> getVenues(
+//            @RequestParam String city
+//    ) {
+//
+//        List<VenueSummeryResponseDto> response =
+//                venueService.getVenues(city);
+//
+//        return ResponseEntity.ok(
+//                ApiResponse.<List<VenueSummeryResponseDto>>builder()
+//                        .success(true)
+//                        .message("Venues fetched successfully")
+//                        .timestamp(LocalDateTime.now())
+//                        .data(response)
+//                        .build()
+//        );
+//    }
 
     /**
      * Get single venue details
@@ -74,13 +74,21 @@ public class PublicController {
      * Example:
      * /api/v1/venues/search?sportType=CRICKET
      */
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<VenueSummeryResponseDto>>> getVenuesBySport(
-            @RequestParam SportType sportType
+    @GetMapping()
+    public ResponseEntity<ApiResponse<List<VenueSummeryResponseDto>>> getVenuesByCityAndSport(
+            @RequestParam String city,
+            @RequestParam(required = false) SportType sportType
+
     ) {
 
-        List<VenueSummeryResponseDto> response =
-                venueService.getVenueBySportType(sportType);
+        List<VenueSummeryResponseDto> response;
+
+        if(sportType != null){
+            response = venueService.getVenuesByCityAndSportType(city,sportType);
+
+        }else{
+            response = venueService.getVenues(city);
+        }
 
         return ResponseEntity.ok(
                 ApiResponse.<List<VenueSummeryResponseDto>>builder()

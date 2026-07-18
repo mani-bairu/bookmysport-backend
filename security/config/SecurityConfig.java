@@ -70,6 +70,7 @@ public class SecurityConfig {
                             .requestMatchers("/ws/**", "/test/**").permitAll()
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/venues/**").permitAll()
+                            .requestMatchers("/actuator/health").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(

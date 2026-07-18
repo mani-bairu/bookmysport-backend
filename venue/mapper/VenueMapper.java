@@ -1,5 +1,6 @@
 package com.bookmysport.backend.venue.mapper;
 
+import com.bookmysport.backend.common.enums.AreaStatus;
 import com.bookmysport.backend.common.enums.SportType;
 import com.bookmysport.backend.common.enums.VenueStatus;
 import com.bookmysport.backend.user.entity.UserEntity;
@@ -72,6 +73,7 @@ public class VenueMapper {
 
         List<SportType> sportTypes = venue.getSportAreas()
                 .stream()
+                .filter(sa -> sa.getStatus() == AreaStatus.ACTIVE)
                 .map(SportAreaEntity::getSportType)
                 .distinct()
                 .toList();
@@ -80,6 +82,7 @@ public class VenueMapper {
                 .id(venue.getId())
                 .name(venue.getVenueName())
                 .city(venue.getCity())
+                .address(venue.getAddress())
                 .sports(sportTypes)
                 .build();
 

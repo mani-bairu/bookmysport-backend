@@ -1,6 +1,8 @@
 package com.bookmysport.backend.venue.repository;
 
+import com.bookmysport.backend.common.enums.AreaStatus;
 import com.bookmysport.backend.common.enums.SportType;
+import com.bookmysport.backend.venue.dto.responsedto.VenueSummeryResponseDto;
 import com.bookmysport.backend.venue.entity.VenueEntity;
 import com.bookmysport.backend.common.enums.VenueStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,9 +27,9 @@ public interface VenueRepository extends JpaRepository<VenueEntity,Long> {
     List<VenueEntity> findByCityAndStatus(String city, VenueStatus Status);
 
 //    List<VenueEntity>  getVenuesBySportType(SportType sportType, VenueStatus Status);
-    List<VenueEntity> findDistinctBySportAreas_SportTypeAndStatus(
-        SportType sportType,
-        VenueStatus status );
+//    List<VenueEntity> findDistinctBySportAreas_SportTypeAndStatus(
+//        SportType sportType,
+//        VenueStatus status );
 
     /**
      * Haversine formula — finds APPROVED venues within radiusKm of a lat/lng point.
@@ -58,4 +60,23 @@ public interface VenueRepository extends JpaRepository<VenueEntity,Long> {
 //            @Param("city") String city,
 //            @Param("radiusKm") double radiusKm);
 
+
+    @Query("""
+      SELECT DISTINCT v
+      FROM VenueEntity v
+      JOIN v.sportAreas sa
+      WHERE v.status = :venueStatus
+        AND v.city =:city
+        AND sa.status =:sportAreaStatus
+        AND sa.sportType =:sportType
+      """)
+    List<VenueEntity> getVenuesByCityAndSportType(
+            @Param("city") String city,
+            @Param("sportType") SportType sportType,
+            @Param("venueStatus") VenueStatus venueStatus,
+            @Param("sportAreaStatus") AreaStatus sportAreaStatus
+    );
+
 }
+
+

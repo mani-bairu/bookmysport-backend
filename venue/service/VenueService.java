@@ -1,5 +1,6 @@
 package com.bookmysport.backend.venue.service;
 
+import com.bookmysport.backend.common.enums.AreaStatus;
 import com.bookmysport.backend.common.enums.SportType;
 import com.bookmysport.backend.common.enums.VenueStatus;
 import com.bookmysport.backend.exception.ResourseNotFoundException;
@@ -169,8 +170,13 @@ public class VenueService {
     }
 
     @Transactional(readOnly = true)
-    public List<VenueSummeryResponseDto> getVenueBySportType(SportType sport) {
-        List<VenueEntity> venues = venueRepository.findDistinctBySportAreas_SportTypeAndStatus(sport,VenueStatus.APPROVED);
+    public List<VenueSummeryResponseDto> getVenuesByCityAndSportType(String city ,SportType sportType) {
+        List<VenueEntity> venues = venueRepository.
+                getVenuesByCityAndSportType(city,
+                                            sportType,
+                                            VenueStatus.APPROVED,
+                                            AreaStatus.ACTIVE);
+
         if (venues.isEmpty()) {
             throw new ResourseNotFoundException("Venues Not Found");
         }

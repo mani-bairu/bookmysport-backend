@@ -10,6 +10,7 @@ public class authResponseDto {
     private String token;
     private String email;
     private String role;
+    private String name;
 
 
 }
